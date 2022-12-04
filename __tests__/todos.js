@@ -45,7 +45,6 @@ describe("Todo Application", function () {
     const todoID = parsedResponse.id;
 
     expect(parsedResponse.completed).toBe(false);
-
     const markCompleteResponse = await agent
       .put(`/todos/${todoID}/markASCompleted`)
       .send();
