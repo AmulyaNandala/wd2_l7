@@ -1,9 +1,8 @@
 const express = require("express");
-const app = express();
 var csrf = require("tiny-csrf");
-var cookieParser = require("cookie-parser");
+const app = express();
 const bodyParser = require("body-parser");
-const { Todo } = require("./models");
+var cookieParser = require("cookie-parser");
 const path = require("path");
 
 app.use(bodyParser.json());
@@ -12,8 +11,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("This is a secret string!!!"));
 app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
 
-app.set("view engine", "ejs");
+const { Todo } = require("./models");
 
+
+app.set("view engine", "ejs");
 
 app.get("/", async (request, response) => {
   const allTodosAre = await Todo.getAllTodos();  
@@ -29,23 +30,22 @@ app.get("/", async (request, response) => {
       dueLater,
       dueToday,
       completedItemsIs,
-      csrfToken: request.csrfToken(),//rendering csrf token to avoid invalid csrf token error, for every req. we need to add it
+      csrfToken: request.csrfToken(),
     });
   } else {
     response.json({overdue, dueLater, dueToday, completedItemsIs});
   }
 });
 
-
 app.post("/todos", async (request, response) => {
    console.log("creating new todo", request.body);
   try {
-  
       await Todo.addaTodo({
       title: request.body.title,
       dueDate: request.body.dueDate,
       completed: false,
     });
+    
     return response.redirect("/");
   } catch (err1) {
     console.log(err1);
@@ -65,7 +65,7 @@ app.put("/todos/:id", async (request, response) => {
   }
 });
 app.delete("/todos/:id", async (request, response) => {
-  console.log("Deleting a todo of todo list with a particular id..", request.params.id);
+  console.log("Deleting a todo with a particular id..", request.params.id);
   try {
     await Todo.remove(request.params.id);
     return response.json({ success: true });
